@@ -1,0 +1,725 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Miniproject - DDPG
+\end_layout
+
+\begin_layout Author
+Antoine Maier - Aude Maier
+\end_layout
+
+\begin_layout Section*
+Introduction
+\end_layout
+
+\begin_layout Standard
+In this project, we will explore the Deep Deterministic Policy Gradient
+ (DDPG) algorithm, which is designed to handle continuous action spaces
+ in Reinforcement Learning.
+ We will use the 
+\begin_inset CommandInset href
+LatexCommand href
+name "Pendulum-v1"
+target "https://www.gymlibrary.dev/environments/classic_control/pendulum/"
+literal "false"
+
+\end_inset
+
+ environment implemented in OpenAI Gym to implement the DDPG algorithm from
+ scratch to solve the classical control problem of stabilizing an inverted
+ pendulum.
+ Throughout the development, we will incrementally build the components
+ of DDPG and analyze their importance for correct and effective learning.
+ 
+\end_layout
+
+\begin_layout Standard
+This Jupyter notebook contains our implementation and report for this project.
+ Do not forget to remove the report parts before submitting the notebook.
+\end_layout
+
+\begin_layout Standard
+The instructions are available in `Miniproject_DDPG.pdf` file.
+\end_layout
+
+\begin_layout Section*
+3 Heuristic Policy
+\end_layout
+
+\begin_layout Standard
+The environment consists of a pendulum attached to a fixed pivot point.
+ Its position is described by the angle 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ between the pendulum and the upward vertical direction, and its (angular)
+ velocity is 
+\begin_inset Formula $\dot{\alpha}$
+\end_inset
+
+.
+ The pendulum is actuated by applying a torque 
+\begin_inset Formula $\tau$
+\end_inset
+
+ on its pivot point (the action space is thus continuous).
+ The pendulum is subject to gravity, which is the only external force acting
+ on it.
+\end_layout
+
+\begin_layout Standard
+The pendulum starts in a random position, with a random velocity and the
+ aim is to stabilize it in the inverted position, using little torque.
+ More precisely, we want to maximise cummulative reward 
+\begin_inset Formula $-\left(\alpha^{2}+0.1\dot{\alpha}^{2}+0.001\tau^{2}\right)$
+\end_inset
+
+ over a time horizon of 200 steps.
+ The pendulum starts in a random position, with a random velocity.
+\end_layout
+
+\begin_layout Standard
+First we will compare two policies: a random policy and a heuristic policy.
+ The random policy is a policy that selects actions uniformly at random
+ from the action space, i.e.
+ it applies a tork of random magnitude (within the allowed range)in a random
+ direction.
+ The heuristic policy is defined as follows:
+\end_layout
+
+\begin_layout Itemize
+When the pendulum is in the lower half of the domain, applies a fixed torque
+ in the same direction as the pendulum's angular velocity;
+\end_layout
+
+\begin_layout Itemize
+When the pendulum is in the upper half of the domain, applies a fixed torque
+ in the opposite direction as the pendulum's angular velocity.
+\end_layout
+
+\begin_layout Standard
+The average return over 100 episodes and its standard deviation for the
+ random policy is 
+\begin_inset Formula $-1230\pm270$
+\end_inset
+
+, which sets a baseline for the performance of the policies.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/3-Average-return.pdf
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On Fig.
+ 1, we see the average return over 100 episodes for the heuristic policy
+ depending on the magnitude of the fixed torque.
+ The performance increases linearly from 
+\begin_inset Formula $-1190\pm330$
+\end_inset
+
+ for a null fixed torque to 
+\begin_inset Formula $-590\pm200$
+\end_inset
+
+ for a fixed torque of 
+\begin_inset Formula $0.5$
+\end_inset
+
+, and then increases with a smaller slope up to 
+\begin_inset Formula $-430\pm110$
+\end_inset
+
+ for a fixed torque of 
+\begin_inset Formula $1$
+\end_inset
+
+.
+ The exact performance varies from one run to another, but when the performance
+ increases the standard deviation decreases.
+ We observe that the heuristic policy performs better than the random policy
+ for all nonzero values of the fixed torque.
+\end_layout
+
+\begin_layout Section*
+4 Q-function of the heuristic policy
+\end_layout
+
+\begin_layout Standard
+We now implement a critic, i.e.
+ a Q-network, whose goal is to estimate the Q-function of the heuristic
+ policy.
+ We use a neural network with two hidden layers of 32 neurons each, with
+ ReLU activation functions.
+ It is updated using the semi-gradient of the mean squared error between
+ the predicted and target Q-values.
+ The training is done over 1000 epochs, with a batch size of 64.
+\end_layout
+
+\begin_layout Standard
+On Fig.
+ 2 we see the training curve with batches of size 128 and 1000 epochs.
+ We can see that the training is very fast, with the loss decreasing to
+ a value of approximately 70 after only 100 episodes.
+ The loss then decreases more slowly, reaching a value close to 50 after
+ 1000 episodes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Mean-loss.pdf
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We then plot and compare the Q-values given by the Q-network before and
+ after training, for several values of torque and velocity, by mean of heatmaps.
+ The chosen values for the torque and velocity are
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-_training_0_0.png
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_0_0.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-training_1_-1.png
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_1_-1.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-training_-1_-1.png
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_-1_-1.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align left
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-training_1_-5.png
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align left
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_1_-5.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align left
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-training_-1_-5.png
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align left
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_-1_-5.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As can be seen on Fig.
+\begin_inset space ~
+\end_inset
+
+, the Q-values before training are a mix of randomness and continuity, which
+ is easily explained by the random initialization of the weights and the
+ intrinsic continuity of the network.
+ The Q-values after training are (in absolute value) larger by 4 order of
+ magnitudes and the heatmap corresponding to 0 torque and 0 velocity shows
+ an accurate representation from the network of the reward distribution.
+ Then, on Fig.
+\begin_inset space ~
+\end_inset
+
+ for torque
+\begin_inset Formula $=1$
+\end_inset
+
+, velocity
+\begin_inset Formula $=-1$
+\end_inset
+
+, (1 -1 et -1 -1 sont en gros pareil, on peut supposer que c'est parce que
+ pour -1 -1 le réseau n'a pas été entraîné donc il copie en gros 1 -1, et
+ on voit que les meilleures q-values sont juste après zéro car pour une
+ petite vitesse le torque inverse va permettre de le ralentir avant qu'il
+ franchisse 0 et donc passer plus de temps près de la position de reward
+ max)
+\end_layout
+
+\end_body
+\end_document
