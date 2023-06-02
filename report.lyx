@@ -195,10 +195,29 @@ status open
 
 \begin_layout Plain Layout
 
-\end_layout
+\lang french
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
 
 \begin_layout Plain Layout
 \align center
+
+\lang french
 \begin_inset Graphics
 	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/3-Average-return.pdf
 	scale 50
@@ -206,9 +225,20 @@ status open
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang french
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
 
 \end_layout
 
@@ -217,7 +247,66 @@ status open
 
 \end_layout
 
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
 \begin_layout Plain Layout
+\align center
+
+\lang french
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Training.pdf
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang french
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4-training"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -228,8 +317,21 @@ status open
 
 \begin_layout Standard
 On Fig.
- 1, we see the average return over 100 episodes for the heuristic policy
- depending on the magnitude of the fixed torque.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:3"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we see the average return over 100 episodes for the heuristic policy depending
+ on the magnitude of the fixed torque.
  The performance increases linearly from 
 \begin_inset Formula $-1190\pm330$
 \end_inset
@@ -269,12 +371,27 @@ We now implement a critic, i.e.
  ReLU activation functions.
  It is updated using the semi-gradient of the mean squared error between
  the predicted and target Q-values.
- The training is done over 1000 epochs, with a batch size of 64.
+ The training is done over 1000 epochs, with a batch size of 64, and a torque
+ magnitude of 1 (i.e.
+ the value that obtained the highest cumulative reward in the previous section).
 \end_layout
 
 \begin_layout Standard
 On Fig.
- 2 we see the training curve with batches of size 128 and 1000 epochs.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4-training"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ we see the training curve with batches of size 128 and 1000 epochs.
  We can see that the training is very fast, with the loss decreasing to
  a value of approximately 70 after only 100 episodes.
  The loss then decreases more slowly, reaching a value close to 50 after
@@ -282,409 +399,10 @@ On Fig.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Mean-loss.pdf
-	scale 50
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 We then plot and compare the Q-values given by the Q-network before and
  after training, for several values of torque and velocity, by mean of heatmaps.
- The chosen values for the torque and velocity are
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-_training_0_0.png
-	scale 50
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_0_0.png
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-training_1_-1.png
-	scale 50
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_1_-1.png
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-training_-1_-1.png
-	scale 50
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_-1_-1.png
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align left
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-training_1_-5.png
-	scale 50
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align left
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_1_-5.png
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align left
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-before-training_-1_-5.png
-	scale 50
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align left
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Heatmap-after-training_-1_-5.png
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
+ The chosen values for the torque and velocity are 
+\begin_inset Formula $(0,$
 \end_inset
 
 
@@ -699,26 +417,314 @@ As can be seen on Fig.
  is easily explained by the random initialization of the weights and the
  intrinsic continuity of the network.
  The Q-values after training are (in absolute value) larger by 4 order of
- magnitudes and the heatmap corresponding to 0 torque and 0 velocity shows
- an accurate representation from the network of the reward distribution.
- Then, on Fig.
-\begin_inset space ~
+ magnitudes.
+ The heatmap corresponding to 0 torque and 0 velocity shows an accurate
+ representation from the network of the reward distribution, i.e.
+ the closer you are to 
+\begin_inset Formula $0^{°}$
 \end_inset
 
- for torque
-\begin_inset Formula $=1$
+, the more reward you get and the easier it will be to be close to 
+\begin_inset Formula $0^{°}$
+\end_inset
+
+ in the future.
+ A notable fact is that this representation appeared without any explicit
+ training of the action corresponding to torque
+\begin_inset Formula $=0$
+\end_inset
+
+ but is an interpolation of the knowledge acquired for torque
+\begin_inset Formula $=\pm1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The heatmaps of torque
+\begin_inset Formula $=\pm1$
 \end_inset
 
 , velocity
 \begin_inset Formula $=-1$
 \end_inset
 
-, (1 -1 et -1 -1 sont en gros pareil, on peut supposer que c'est parce que
- pour -1 -1 le réseau n'a pas été entraîné donc il copie en gros 1 -1, et
- on voit que les meilleures q-values sont juste après zéro car pour une
- petite vitesse le torque inverse va permettre de le ralentir avant qu'il
- franchisse 0 et donc passer plus de temps près de la position de reward
- max)
+ are very similar and can be summarized as a slight rotation of the 
+\begin_inset Formula $(0,0)$
+\end_inset
+
+ heatmap.
+ Again, one can note that each torque has only been trained on half of the
+ angle values, hence they look as if they have inspired each other for the
+ other half of the values.
+\end_layout
+
+\begin_layout Standard
+Finally, the heatmaps with torque
+\begin_inset Formula $=\pm1$
+\end_inset
+
+, velocity
+\begin_inset Formula $=-5$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+5 Minimal implementation of DDPG
+\end_layout
+
+\begin_layout Standard
+In this section, we replace the heuristic agent by an agent equipped with
+ a policy network that compute the next action to take based on the current
+ state.
+ We use a neural network with two hidden layers of 32 neurons each, with
+ ReLU activation functions, and a tanh activation on the output layer, ensuring
+ the returned action is between -1 and 1.
+ The policy network is updated in order to maximize the mean Q-value.
+ The simultaneous training of the policy network and the Q network is done
+ over 1000 epochs, with a batch size of 128.
+ To enable a better exploration of the state space when generating new transitio
+ns, a small Gaussian noise is added to the action returned by the policy
+ network.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/5-Training.pdf
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:5-training"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:5-training"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ reports the losses of the Q network and Policy network as well as the cumulativ
+e reward for each episode throughout the training.
+\end_layout
+
+\begin_layout Standard
+Once the training is done, we execute 100 test episodes uding the trained
+ Policy network.
+ The average return obtained is...
+\end_layout
+
+\begin_layout Section*
+6 Target networks
+\end_layout
+
+\begin_layout Standard
+When experimenting with the first implementation of DDPG above, we noticed
+ that depending on the choice of the seed, the training was sometimes unstable.
+ This motivates the use of target networks, which are copies of the actor
+ and critic networks that are "soft updated".
+ This means that each step they are updated with a weighted average between
+ the weights of the target network and the weights of the original network,
+ i.e.
+ each weight 
+\begin_inset Formula $w_{target}$
+\end_inset
+
+ of the actor/critic target network are updated using this equation:
+\begin_inset Formula 
+\[
+w_{\mathrm{target}}^{(t+1)}=\tau\cdot w_{\mathrm{original}}^{(t)}+(1-\tau)\cdot w_{\mathrm{target}}^{(t)}
+\]
+
+\end_inset
+
+with 
+\begin_inset Formula $\tau\in(0,1)$
+\end_inset
+
+.
+ The target networks are used instead of the true networks in the computation
+ of the target Q-value.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\lang french
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\align center
+
+\lang french
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/6-Training.pdf
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang french
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\align center
+
+\lang french
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/7-Training.pdf
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang french
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+7 Ornstein-Uhlenbeck noise
+\end_layout
+
+\begin_layout Standard
+Adding noise to the action helps exploration of the state space, which is
+ necessary to learn a good policy.
+ However, adding uncorrelated noise to subsequent actions is not very effective
+ in practice, as it leads to trajectories close to the deterministic one.
+ To improve the exploration of the algorithm, we replace the Gaussian noise
+ with a (simplified) Ornstein-Uhlenbeck noise defined by the iterative equation:
+\begin_inset Formula 
+\[
+\mathrm{noise}^{(t+1)}=(1-\theta)\cdot\mathrm{noise}^{(t)}+\mathcal{N}(0,\sigma^{2})
+\]
+
+\end_inset
+
+ with 
+\begin_inset Formula $\theta\in(0,1)$
+\end_inset
+
+.
 \end_layout
 
 \end_body
