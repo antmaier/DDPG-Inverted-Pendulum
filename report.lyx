@@ -143,10 +143,11 @@ literal "false"
 \end_inset
 
  environment implemented in OpenAI Gym to implement the DDPG algorithm from
- scratch to solve the classical control problem of stabilizing an inverted
+ scratch to solve the classical control problem of stabilising an inverted
  pendulum.
  Throughout the development, we will incrementally build the components
- of DDPG and analyze their importance for correct and effective learning.
+ of DDPG and explore the impact of target networks and Ornstein-Uhlenbeck
+ noise on the learning process.
 \end_layout
 
 \begin_layout Section*
@@ -281,6 +282,10 @@ noprefix "false"
  a value of approximately 70 after only 100 episodes.
  The loss then decreases more slowly, reaching a value close to 50 after
  1000 episodes.
+ Moreover, we observe a rapid increase of the Q-loss during the first episodes.
+ This is due to the fact that the replay buffer is almost empty and therefore
+ the network is trained on the same (or very similar) samples over and over.
+ We will encounter this phenomenon for every network training in this work.
 \end_layout
 
 \begin_layout Standard
@@ -785,18 +790,13 @@ name "fig:6-training"
 
 \end_inset
 
-Training curves for the Q-network and the policy network of the DDPG agent
- equipped with target networks, for different values of update parameter
- 
+Training curves for the Q-network and the policy network, and return per
+ episode, for the DDPG agent equipped with target networks, for different
+ values of update parameter 
 \begin_inset Formula $\tau$
 \end_inset
 
 .
- The return per episode is also plotted for each value of 
-\begin_inset Formula $\tau.$
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -854,7 +854,18 @@ name "fig:7-training"
 
 \end_inset
 
+Training curves for the Q-network and the policy network, and return per
+ episode, for the DDPG agent equipped with target networks (update parameter
+ 
+\begin_inset Formula $\tau=0.5$
+\end_inset
 
+), and Ornstein-Uhlenbeck noise, for different values of correlation parameter
+ 
+\begin_inset Formula $\theta$
+\end_inset
+
+.
 \end_layout
 
 \end_inset
@@ -904,27 +915,28 @@ We see that the stability of the training varies with the value of
 
 .
  For 
-\begin_inset Formula $\tau=0.1$
+\begin_inset Formula $\tau=0.2$
 \end_inset
 
  and 
 \begin_inset Formula $\tau=1$
 \end_inset
 
- (which corresponds to the original DDPG algorithm), the training is unstable,
- with the Q-network loss and policy network loss oscillating around 1000.
+ (which corresponds to the original DDPG algorithm), the training does not
+ converge, with the Q-network loss oscillating around 1000.
  For 
 \begin_inset Formula $\tau=0.01$
 \end_inset
 
-, the curves are similar to 
-\begin_inset Formula $\tau=0.1$
+, the initial increase of the loss, due to overfitting, is slower because
+ by design, a small update parameter slows down the update of the networks.
+ Then, it shows a similar behaviour as the 
+\begin_inset Formula $\tau=0.2$
 \end_inset
 
- during the first 200 episodes but then the losses decrease to approach
- zero.
- Hence, despite the observed convergence, it is likely that another seed
- could have make the training unstable.
+ case up to episode 200 until the losses start decreasing to approach zero.
+ Hence, despite the observed convergence, it looks likely that with another
+ seed the losses would have continued oscillating.
  For 
 \begin_inset Formula $\tau=0.8$
 \end_inset
@@ -940,18 +952,73 @@ We see that the stability of the training varies with the value of
 \end_inset
 
 .
- 
-\begin_inset Formula $\tau=0.5$
-\end_inset
-
- therefore looks like a sweet spot between larger values that do not allow
- a sufficient effect of the target networks and smaller values that update
- the networks too slowly, making them unable to converge.
+ Therefore it looks like a sweet spot between larger values that do not
+ allow a sufficient effect of the target networks and smaller values that
+ update the networks too slowly, making them unable to converge.
 \end_layout
 
 \begin_layout Standard
-...
- add the average cumulative reward over 100 episodes...
+The resulting average return and standard deviation over 100 test episodes
+ for each of the five trained policies are: 
+\begin_inset Formula $-170\pm90$
+\end_inset
+
+ (
+\begin_inset Formula $\tau=0.01$
+\end_inset
+
+), 
+\begin_inset Formula $-1510\pm110$
+\end_inset
+
+ (
+\begin_inset Formula $\tau=0.2$
+\end_inset
+
+), 
+\begin_inset Formula $-140\pm80$
+\end_inset
+
+ (
+\begin_inset Formula $\tau=0.5$
+\end_inset
+
+), 
+\begin_inset Formula $-150\pm80$
+\end_inset
+
+ (
+\begin_inset Formula $\tau=0.8$
+\end_inset
+
+), and 
+\begin_inset Formula $-1480\pm60$
+\end_inset
+
+ (
+\begin_inset Formula $\tau=1$
+\end_inset
+
+).
+ On Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:appendix-comparison"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we compare the performance of the policy trained with 
+\begin_inset Formula $\tau=0.5$
+\end_inset
+
+ with the other policies of this work.
 \end_layout
 
 \begin_layout Section*
@@ -959,33 +1026,17 @@ We see that the stability of the training varies with the value of
 \end_layout
 
 \begin_layout Standard
-Adding noise to the action helps exploration of the state space, which is
- necessary to learn a good policy.
- However, adding uncorrelated noise to subsequent actions is not very effective
- in practice, as it leads to trajectories close to the deterministic one.
- To improve the exploration of the algorithm, we replace the Gaussian noise
- with a (simplified) Ornstein-Uhlenbeck noise defined by the iterative equation:
-\begin_inset Formula 
-\[
-\mathrm{noise}^{(t+1)}=(1-\theta)\cdot\mathrm{noise}^{(t)}+\mathcal{N}(0,\sigma^{2})
-\]
-
-\end_inset
-
- with 
-\begin_inset Formula $\theta\in(0,1)$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
+\begin_inset Wrap figure
+lines 0
+placement o
+overhang 0col%
+width "50col%"
 status open
 
 \begin_layout Plain Layout
+\begin_inset VSpace -30bp
+\end_inset
+
 
 \end_layout
 
@@ -1006,6 +1057,25 @@ name "fig:appendix-comparison"
 
 \end_inset
 
+Comparison of average return and standard deviation over 100 episodes for
+ the random policy, the heuristic policy with best torque intensity (=1),
+ DDPG agent, DDPG agent with target network with best update parameter (
+\begin_inset Formula $\tau=0.5$
+\end_inset
+
+) and DDPG agent with target network (
+\begin_inset Formula $\tau=0.5$
+\end_inset
+
+) and Ornstein-Uhlenbeck noise with best correlation parameter (
+\begin_inset Formula $\theta=0.5$
+\end_inset
+
+).
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -1014,13 +1084,289 @@ name "fig:appendix-comparison"
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
+\begin_layout Standard
+Adding noise to the action helps exploration of the state space, which is
+ necessary to learn a good policy.
+ However, adding uncorrelated noise to subsequent actions is not very effective
+ in practice, as it leads to trajectories close to the deterministic one.
+ To improve the exploration of the algorithm, we replace the Gaussian noise
+ with a (simplified) Ornstein-Uhlenbeck noise defined by the iterative equation:
+\begin_inset Formula 
+\[
+\mathrm{noise}^{(n+1)}=(1-\theta)\cdot\mathrm{noise}^{(n)}+\mathcal{N}(0,\sigma^{2})
+\]
 
 \end_inset
 
+ with 
+\begin_inset Formula $\theta\in(0,1)$
+\end_inset
 
+.
+\end_layout
+
+\begin_layout Standard
+Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:7-training"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ shows the training curves and return per episode during training of a DDPG
+ agent with target networks and Ornstein-Uhlenbeck noise, using batch size
+ 128 over 1000 episodes.
+ The training was done for 5 different values of 
+\begin_inset Formula $\text{\ensuremath{\theta}}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We observe that with 
+\begin_inset Formula $\theta=0$
+\end_inset
+
+, the training looks chaotic.
+ This can be explained by a probabilistic phenomena.
+ The noise added at the 
+\begin_inset Formula $n$
+\end_inset
+
+-th step can be written as 
+\begin_inset Formula 
+\[
+X_{n}\sim\mathcal{N}(0,\sigma^{2})+\sum_{i=1}^{n-1}(1-\theta)^{2i}\mathcal{N}(0,\sigma^{2})\overset{d}{=}\mathcal{N}\left(0,\sigma^{2}\frac{1-(1-\theta)^{2n}}{1-(1-\theta)^{2}}\right)
+\]
+
+\end_inset
+
+for 
+\begin_inset Formula $\theta>0$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathcal{N}(0,n\sigma^{2})$
+\end_inset
+
+ for 
+\begin_inset Formula $\theta=0$
+\end_inset
+
+.
+ Hence, in the case 
+\begin_inset Formula $\theta=0$
+\end_inset
+
+, the variance grows linearly with 
+\begin_inset Formula $n$
+\end_inset
+
+ and, already at the 25th step of an episode, the probability for the noise
+ to be greater than 1 in absolute value, causing the action to be likely
+ clipped to the boundaries of the action space (
+\begin_inset Formula $\pm1$
+\end_inset
+
+), is 
+\begin_inset Formula $\sim0.5$
+\end_inset
+
+ and this probability will continue to grow during the episode.
+ The noise thus completely dwarfs the action chosen by the policy.
+ As a result, the vaste majority of actions taken during training have value
+ 
+\begin_inset Formula $\pm1$
+\end_inset
+
+, chosen randomly.
+ In this condition, it is no surprise that the agent is unable to learn
+ and achieve good performances.
+\end_layout
+
+\begin_layout Standard
+With a non null 
+\begin_inset Formula $\theta$
+\end_inset
+
+ however, while still growing with 
+\begin_inset Formula $n$
+\end_inset
+
+, the variance is bounded, due to the exponential decay of the cumulative
+ noise history, and the distribution tends toward 
+\begin_inset Formula $X_{n\rightarrow\infty}\sim\mathcal{N}\left(0,\frac{\sigma^{2}}{1-(1-\theta)^{2}}\right)$
+\end_inset
+
+.
+ In the case 
+\begin_inset Formula $\theta=0.25$
+\end_inset
+
+, even in the limit 
+\begin_inset Formula $n\rightarrow\infty$
+\end_inset
+
+, the probability of 
+\begin_inset Formula $|X_{\infty}|>1$
+\end_inset
+
+ is 
+\begin_inset Formula $\sim0.02$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+On the other hand, when using large 
+\begin_inset Formula $\theta$
+\end_inset
+
+ values (
+\begin_inset Formula $0.75$
+\end_inset
+
+ and 
+\begin_inset Formula $1$
+\end_inset
+
+), the noise is (almost) uncorrelated and we recover the situation of the
+ previous section.
+ However, even though we used the best update parameter found in section
+ 6 (
+\begin_inset Formula $\tau=0.5$
+\end_inset
+
+), we observe that the training can still fail to converge.
+\end_layout
+
+\begin_layout Standard
+The fastest learnings are achieved by small, but non-zero, values of 
+\begin_inset Formula $\theta$
+\end_inset
+
+ (0.25 and 0.5).
+ This shows the crucial role played by the value of the correlation parameter
+ 
+\begin_inset Formula $\theta$
+\end_inset
+
+ to effectively introduce correlation in noise while ensuring that the policy's
+ decisions remain significant.
+\end_layout
+
+\begin_layout Standard
+The resulting average return and standard deviation over 100 test episodes
+ for each of the five trained policies are: 
+\begin_inset Formula $-1110\pm370$
+\end_inset
+
+ (
+\begin_inset Formula $\theta=0$
+\end_inset
+
+), 
+\begin_inset Formula $-170\pm100$
+\end_inset
+
+ (
+\begin_inset Formula $\theta=0.25$
+\end_inset
+
+), 
+\begin_inset Formula $-150\pm80$
+\end_inset
+
+ (
+\begin_inset Formula $\theta=0.5$
+\end_inset
+
+), 
+\begin_inset Formula $-970\pm470$
+\end_inset
+
+ (
+\begin_inset Formula $\theta=0.75$
+\end_inset
+
+), and 
+\begin_inset Formula $-150\pm90$
+\end_inset
+
+ (
+\begin_inset Formula $\theta=1$
+\end_inset
+
+).
+ On Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:appendix-comparison"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, we compare the performance of the policy trained with 
+\begin_inset Formula $\theta=0.5$
+\end_inset
+
+ with the other policies of this work.
+\end_layout
+
+\begin_layout Section*
+Conclusion
+\end_layout
+
+\begin_layout Standard
+In this project, we implemented the DDPG algorithm from scratch to solve
+ the classical control problem of stabilizing an inverted pendulum.
+ First we trained a Q-network on a heuristic policy and then we trained
+ an actor-critic network using the DDPG algorithm.
+ We then studied the importance of using target networks to stabilise the
+ learning process and found a sweet spot for the update parameter of the
+ target networks, 
+\begin_inset Formula $\tau=0.5$
+\end_inset
+
+.
+ We also experimented using Ornstein-Uhlenbeck noise to explore the action
+ space and explained mathematically why a null correlation parameter prevents
+ the agent from learning.
+ Finally, we compared the performance of all the policies used in this project
+ on Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:appendix-comparison"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ We see that DDPG algorithm is better than heuristic policy and, even though
+ adding target networks and Ornstein-Uhlenbeck noise do not lead to better
+ performances, they help stabilising and accelerating the learning process,
+ respectively.
 \end_layout
 
 \end_body
