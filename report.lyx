@@ -60,7 +60,7 @@
 \leftmargin 2cm
 \topmargin 2cm
 \rightmargin 2cm
-\bottommargin 2cm
+\bottommargin 1.5cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -155,19 +155,18 @@ literal "false"
 \end_layout
 
 \begin_layout Standard
-In this work, the action space is renormalized to 
+In this work, the action space is renormalised to 
 \begin_inset Formula $[-1,1]$
 \end_inset
 
- where -1 corresponds to the maximum torque in the clockwise direction (i.e.
- -2) and 1 to the maximum torque in the counterclockwise direction (i.e.
- 2).
+ where -1 corresponds to the maximum torque in the clockwise direction and
+ 1 to the maximum torque in the counterclockwise direction.
  This convention is used throughout the rest of this report.
 \end_layout
 
 \begin_layout Standard
 First we will compare two policies: a random policy that selects actions
- uniformly at random from the action space, and a heuristic policy desined
+ uniformly at random from the action space, and a heuristic policy designed
  to accelerate the pendulum when on the lower half of the domain and deccelerate
  it otherwise.
 \end_layout
@@ -252,18 +251,17 @@ noprefix "false"
 \begin_layout Standard
 We now implement a critic, i.e.
  a Q-network, whose goal is to estimate the Q-function of the heuristic
- policy.
+ policy with torque intensity 1 (i.e.
+ the value that achieved the highest cumulative reward in the previous section).
  We use a neural network with two hidden layers of 32 neurons each, with
  ReLU activation functions.
  It is updated using the semi-gradient of the mean squared error between
  the predicted and target Q-values.
- The training is done over 1000 epochs, with a batch size of 64, and a torque
- magnitude of 1 (i.e.
- the value that obtained the highest cumulative reward in the previous section).
+ 
 \end_layout
 
 \begin_layout Standard
-On Fig.
+In Fig.
 \begin_inset space ~
 \end_inset
 
@@ -278,14 +276,15 @@ noprefix "false"
 \end_inset
 
  we see the training curve with batches of size 128 and 1000 epochs.
- We can see that the training is very fast, with the loss decreasing to
- a value of approximately 70 after only 100 episodes.
- The loss then decreases more slowly, reaching a value close to 50 after
- 1000 episodes.
- Moreover, we observe a rapid increase of the Q-loss during the first episodes.
- This is due to the fact that the replay buffer is almost empty and therefore
- the network is trained on the same (or very similar) samples over and over.
+ We observe a rapid increase of the Q-loss during the first episodes.
+ This is due to the fact that the replay buffer is almost empty at that
+ stage and therefore the network is trained on the same (or very similar)
+ samples over and over.
  We will encounter this phenomenon for every network training in this work.
+ After this initial peak, the loss decreases rapidely to a value of approximatel
+y 70 after 100 episodes.
+ The training then slows down, with the loss reaching a value close to 50
+ after 1000 episodes.
 \end_layout
 
 \begin_layout Standard
@@ -402,7 +401,7 @@ name "fig:4-training"
 
 Mean Q-loss per episode during training of the Q-network for the heuristic
  agent.
- The slope of the linear regression line is 0.01.
+ The slope of the linear regression line is -0.01.
 \end_layout
 
 \end_inset
@@ -444,13 +443,13 @@ name "fig:4-5-Heatmaps"
 
 \end_inset
 
-Q-value as a function of the position of the pendulum, for a given torque
- and velocity.
+Q-value as a function of the position of the pendulum, for a given velocity
+ and torque.
  The two first rows plot the Q-values computed by the heuristic Q-network
  before and after training, respectively.
  The third row shows the Q-values computed by the Q-network of the DDPG
  agent.
- For each row, five different torque-velocity pairs are considered.
+ For each row, five different velocity-torque pairs are considered.
 \end_layout
 
 \end_inset
@@ -465,8 +464,9 @@ Q-value as a function of the position of the pendulum, for a given torque
 
 \begin_layout Standard
 We then plot and compare the Q-values given by the Q-network before and
- after training, for several values of torque and velocity, by mean of heatmaps.
- The result is shown on the two top rows on Fig. 
+ after training, for several values of torque and velocity, by means of
+ heatmaps.
+ The result is shown in the top two rows of Fig. 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:4-5-Heatmaps"
@@ -485,18 +485,18 @@ ric direction and a positive torque corresponds to a torque applied in the
 The Q-values before training are almost null constants compared to after
  the training.
  In fact, if plotted on a different color scale, we would see that the Q-values
- before training are a mix of randomness and continuity or order 
+ before training are a mix of randomness and continuity of order 
 \begin_inset Formula $O(10^{-2})$
 \end_inset
 
 , which is easily explained by the random initialization of the weights
  and the intrinsic continuity of the network, and it is certainly not due
- to the fact that the policy acheives a high return and that the Q-network
+ to the fact that the policy achieves a high return and that the Q-network
  is able to predict it.
 \end_layout
 
 \begin_layout Standard
-The Q-values after training are 4 order of magnitude larger (in absolute
+The Q-values after training are 4 orders of magnitude larger (in absolute
  value).
  The heatmap corresponding to velocity=0 and torque=0 shows an accurate
  representation of the reward distribution, i.e.
@@ -519,20 +519,21 @@ The Q-values after training are 4 order of magnitude larger (in absolute
 \end_layout
 
 \begin_layout Standard
-The heatmaps of velocity=1, torque=-1 is similar to the previous one, but
+The heatmap of velocity=1, torque=-1 is similar to the previous one, but
  with a slight rotation in the clockwise direction.
  This is due to the fact that with this (small) velocity, the heuristic
  policy will decelerate the pendulum to try to balance it in the inverted
  position, thus leading to a high reward for a small negative angle.
- We note that the lower left and right cadrans are situations that the Q-network
- has never experienced, since the heuristic policy is perfectly deterministic.
- With velocity=1 but torque=1, these are the two upper cadrans that are
+ We note that the lower left and right quadrants are situations that the
+ Q-network has never experienced, since the heuristic policy is perfectly
+ deterministic.
+ With velocity=1 but torque=1, these are the two upper quadrants that are
  unexperienced situations for the Q-network.
  However, the heatmap is very similar to the previous one, hence it looks
- the Q-network has infered the Q-values for the unexperienced situations
+ as if the Q-network has inferred the Q-values for the unexperienced situations
  from the experienced ones.
  Unfortunately, we can doubt that in such a situation of positive velocity
- and accelerated pendulum the Q-value would be as high as calimed by the
+ and accelerated pendulum the Q-values would be as high as claimed by the
  Q-network.
 \end_layout
 
@@ -541,12 +542,12 @@ Then, the heatmap with velocity=5 and torque=-1 resembles the one with velocity=
 1 and torque=-1, but with the high-reward circular sector rotated in the
  clockwise direction.
  This is due to the fact that with a greater velocity, the heuristic policy
- will be able balance the pendulum if it decelerates it earlier.
+ will be able to balance the pendulum if it decelerates it earlier.
  This time, we chose to change sign of both the velocity and the torque.
- We expect the heatmap to be the mirrored image of the previous one, wich
- is the case up to a certain extent.
- We can image that the differrences between the two heatmaps is due to the
- fact that the Q-network has not been perfectly trained.
+ We expect the heatmap to be the mirrored image of the previous one, which
+ holds up to a certain extent.
+ We can imagine that the differrences between the two heatmaps are due to
+ the fact that the Q-network has not been perfectly trained.
 \end_layout
 
 \begin_layout Section*
@@ -554,18 +555,15 @@ Then, the heatmap with velocity=5 and torque=-1 resembles the one with velocity=
 \end_layout
 
 \begin_layout Standard
-In this section, we replace the heuristic agent by an agent equipped with
+In this section, we replace the heuristic agent with an agent equipped with
  a policy network that compute the next action to take based on the current
  state.
  We use a neural network with two hidden layers of 32 neurons each, with
  ReLU activation functions, and a tanh activation on the output layer, ensuring
- the returned action is between -1 and 1.
- The policy network is updated in order to maximize the mean Q-value.
- The simultaneous training of the policy network and the Q network is done
- over 1000 epochs, with a batch size of 128.
- To enable a better exploration of the state space when generating new transitio
-ns, a small Gaussian noise is added to the action returned by the policy
- network.
+ that the returned action is between -1 and 1.
+ The policy network is updated to maximize the mean Q-value.
+ To enable better exploration of the state space when generating new transitions
+, a small Gaussian noise is added to the action returned by the policy network.
 \end_layout
 
 \begin_layout Standard
@@ -614,7 +612,7 @@ Training curves for the Q-network and the policy network of the minimal
 \end_layout
 
 \begin_layout Standard
-On Fig.
+In Fig.
 \begin_inset space ~
 \end_inset
 
@@ -628,26 +626,39 @@ noprefix "false"
 
 \end_inset
 
- we see the Q-network and policy network training curves with batches of
- size 128 over 1000 episodes, as well as return per episode.
- We see that the training of the two networks are correlated, they both
- first overfit then rapidly decerse their loss in ~100 episodes, then the
- curve plateau for ~100 episodes, and finally they both learn slowly but
- steadily until the loss reaches ~0 at episode 500.
- We see that indeed the networks learned well because the return per episode
- increases steadily until episode 500, then it plateaus.
- This means that stopping the training at episode 500 would have been a
- good choice.
+ we can see the Q-network and policy network training curves with batches
+ of size 128 over 1000 episodes, as well as return per episode.
+ We observe that the trainings of the two networks are correlated.
+ Initially, both networks overfit and then rapidly decrease their loss in
+ 
+\begin_inset Formula $\sim100$
+\end_inset
+
+ episodes.
+ Afterward, the curve plateaus for around 
+\begin_inset Formula $100$
+\end_inset
+
+ episodes, and finally, both networks learn slowly but steadily until the
+ loss reaches 
+\begin_inset Formula $\sim0$
+\end_inset
+
+ at episode 500.
+ We observe that the networks indeed learned well because the return per
+ episode increases steadily until episode 500, after which it plateaus.
+ This indicates that stopping the training at episode 500 would have been
+ a good choice.
 \end_layout
 
 \begin_layout Standard
-The trained policy achieves an average return over 100 episodes and standard
- deviation of 
+The trained policy achieves an average return and standard deviation over
+ 100 episodes of 
 \begin_inset Formula $-180\pm100$
 \end_inset
 
 , which is significantly better than the heuristic policy.
- The comparison can be seeon on Fig.
+ The comparison can be seen in Fig.
 \begin_inset space ~
 \end_inset
 
@@ -666,8 +677,8 @@ noprefix "false"
 
 \begin_layout Standard
 We also want to compare the Q-values given by the Q-network trained on the
- heuristic policy and trained on the agent with a policy network.
- The result is shown on the two bottom rows of Fig.
+ heuristic policy and the agent trained with a policy network.
+ The results are shown in the two bottom rows of Fig.
 \begin_inset space ~
 \end_inset
 
@@ -682,27 +693,45 @@ noprefix "false"
 \end_inset
 
 .
- First, we see that with the policy network the high-rewar sector is much
- larger than with the heuristic policy.
- This is due to the fact that the policy network is more versatile and thus
- can react to more various situations.
+ Firstly, we observe that with the policy network, the high-reward sector
+ is much larger than with the heuristic policy.
+ This is due to the fact that the policy network is more versatile and can
+ react to a wider range of situations.
  In particular, for a null or small velocity, the value of the torque has
  only a small influence on the location of the high-reward sector because
  if the torque is not optimal with respect to the velocity, the policy network
- will compensate this the next step, i.e almost immediately.
+ will compensate for this in the next step, i.e almost immediately.
  This is not the case with the heuristic policy, which is deterministic.
 \end_layout
 
 \begin_layout Standard
 With velocity=5, we would again expect the two heatmaps to be the mirror
- version of each other.
+ versions of each other.
  Even though the high-reward sectors are indeed mirrored, with negative
- torque is is larger and there exists a region with low-reward in the upper-left
- region, which is nonexistent in the other heatmap.
+ torque, it is larger and there exists a region with low-reward in the upper-lef
+t region, which is nonexistent in the other heatmap.
  This might be due to the fact that a velocity of magnitude 5 in the upper
- cadrans was a rare situations during the training and thus the Q-network
- has not been able to learn well the Q-values for these situations, which
- is an example of missgeneralization[SOURCE].
+ quadrants was a rare situation during the training, and thus the Q-network
+ has not been able to learn the Q-values well for these situations.
+ This is an example of missgeneralization
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Shah, Rohin, et al.
+ 
+\shape italic
+Goal Misgeneralization: Why Correct Specifications Aren’t Enough For Correct
+ Goals.
+
+\shape default
+ 2 Nov.
+ 2022, https://arxiv.org/pdf/2210.01790.pdf.
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section*
@@ -714,10 +743,10 @@ When experimenting with the first implementation of DDPG above, we noticed
  that depending on the choice of the seed, the training was sometimes unstable.
  This motivates the use of target networks, which are copies of the actor
  and critic networks that are "soft updated".
- This means that each step they are updated with a weighted average between
- the weights of the target network and the weights of the original network,
- i.e.
- each weight 
+ This means that at each step, they are updated with a weighted average
+ between the weights of the target network and the weights of the original
+ network.
+ In other words, each weight 
 \begin_inset Formula $w_{target}$
 \end_inset
 
@@ -884,7 +913,7 @@ Training curves for the Q-network and the policy network, and return per
 \end_layout
 
 \begin_layout Standard
-We implemented this modification and we see on Fig.
+We implemented this modification, and we see in Fig.
 \begin_inset space ~
 \end_inset
 
@@ -928,7 +957,7 @@ We see that the stability of the training varies with the value of
 \begin_inset Formula $\tau=0.01$
 \end_inset
 
-, the initial increase of the loss, due to overfitting, is slower because
+, the initial increase of the loss, due to overfitting, is slower because,
  by design, a small update parameter slows down the update of the networks.
  Then, it shows a similar behaviour as the 
 \begin_inset Formula $\tau=0.2$
@@ -936,7 +965,7 @@ We see that the stability of the training varies with the value of
 
  case up to episode 200 until the losses start decreasing to approach zero.
  Hence, despite the observed convergence, it looks likely that with another
- seed the losses would have continued oscillating.
+ seed, the losses would have continued oscillating.
  For 
 \begin_inset Formula $\tau=0.8$
 \end_inset
@@ -952,7 +981,7 @@ We see that the stability of the training varies with the value of
 \end_inset
 
 .
- Therefore it looks like a sweet spot between larger values that do not
+ Therefore, it looks like a sweet spot between larger values that do not
  allow a sufficient effect of the target networks and smaller values that
  update the networks too slowly, making them unable to converge.
 \end_layout
@@ -1000,7 +1029,7 @@ The resulting average return and standard deviation over 100 test episodes
 \end_inset
 
 ).
- On Fig.
+ In Fig.
 \begin_inset space ~
 \end_inset
 
@@ -1019,6 +1048,13 @@ noprefix "false"
 \end_inset
 
  with the other policies of this work.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section*
@@ -1063,7 +1099,7 @@ Comparison of average return and standard deviation over 100 episodes for
 \begin_inset Formula $\tau=0.5$
 \end_inset
 
-) and DDPG agent with target network (
+), and DDPG agent with target network (
 \begin_inset Formula $\tau=0.5$
 \end_inset
 
@@ -1136,7 +1172,7 @@ We observe that with
 \end_inset
 
 , the training looks chaotic.
- This can be explained by a probabilistic phenomena.
+ This can be explained by a probabilistic phenomenon.
  The noise added at the 
 \begin_inset Formula $n$
 \end_inset
@@ -1180,28 +1216,28 @@ for
 \begin_inset Formula $\sim0.5$
 \end_inset
 
- and this probability will continue to grow during the episode.
+, and this probability will continue to grow during the episode.
  The noise thus completely dwarfs the action chosen by the policy.
- As a result, the vaste majority of actions taken during training have value
- 
+ As a result, the vast majority of actions taken during training have a
+ value 
 \begin_inset Formula $\pm1$
 \end_inset
 
 , chosen randomly.
- In this condition, it is no surprise that the agent is unable to learn
+ Under this condition, it is no surprise that the agent is unable to learn
  and achieve good performances.
 \end_layout
 
 \begin_layout Standard
-With a non null 
+With a non-null 
 \begin_inset Formula $\theta$
 \end_inset
 
- however, while still growing with 
+, however, while still growing with 
 \begin_inset Formula $n$
 \end_inset
 
-, the variance is bounded, due to the exponential decay of the cumulative
+, the variance is bounded due to the exponential decay of the cumulative
  noise history, and the distribution tends toward 
 \begin_inset Formula $X_{n\rightarrow\infty}\sim\mathcal{N}\left(0,\frac{\sigma^{2}}{1-(1-\theta)^{2}}\right)$
 \end_inset
@@ -1239,7 +1275,7 @@ On the other hand, when using large
 \begin_inset Formula $1$
 \end_inset
 
-), the noise is (almost) uncorrelated and we recover the situation of the
+), the noise is (almost) uncorrelated, and we recover the situation of the
  previous section.
  However, even though we used the best update parameter found in section
  6 (
@@ -1250,7 +1286,7 @@ On the other hand, when using large
 \end_layout
 
 \begin_layout Standard
-The fastest learnings are achieved by small, but non-zero, values of 
+The fastest learnings are achieved by small but non-zero values of 
 \begin_inset Formula $\theta$
 \end_inset
 
@@ -1260,8 +1296,8 @@ The fastest learnings are achieved by small, but non-zero, values of
 \begin_inset Formula $\theta$
 \end_inset
 
- to effectively introduce correlation in noise while ensuring that the policy's
- decisions remain significant.
+ in effectively introducing correlation in noise while ensuring that the
+ policy's decisions remain significant.
 \end_layout
 
 \begin_layout Standard
@@ -1307,7 +1343,7 @@ The resulting average return and standard deviation over 100 test episodes
 \end_inset
 
 ).
- On Fig.
+ In Fig.
 \begin_inset space ~
 \end_inset
 
@@ -1334,21 +1370,21 @@ Conclusion
 
 \begin_layout Standard
 In this project, we implemented the DDPG algorithm from scratch to solve
- the classical control problem of stabilizing an inverted pendulum.
- First we trained a Q-network on a heuristic policy and then we trained
+ the classical control problem of stabilising an inverted pendulum.
+ First, we trained a Q-network on a heuristic policy, and then we trained
  an actor-critic network using the DDPG algorithm.
  We then studied the importance of using target networks to stabilise the
  learning process and found a sweet spot for the update parameter of the
- target networks, 
+ target network, 
 \begin_inset Formula $\tau=0.5$
 \end_inset
 
 .
- We also experimented using Ornstein-Uhlenbeck noise to explore the action
- space and explained mathematically why a null correlation parameter prevents
- the agent from learning.
+ We also experimented with using Ornstein-Uhlenbeck noise to explore the
+ action space and explained mathematically why a null correlation parameter
+ prevents the agent from learning.
  Finally, we compared the performance of all the policies used in this project
- on Fig.
+ in Fig.
 \begin_inset space ~
 \end_inset
 
@@ -1363,10 +1399,10 @@ noprefix "false"
 \end_inset
 
 .
- We see that DDPG algorithm is better than heuristic policy and, even though
- adding target networks and Ornstein-Uhlenbeck noise do not lead to better
- performances, they help stabilising and accelerating the learning process,
- respectively.
+ We observe that the DDPG algorithm is better than the heuristic policy,
+ and although adding target networks and Ornstein-Uhlenbeck noise does not
+ lead to better performance, they help stabilise and accelerate the learning
+ process, respectively.
 \end_layout
 
 \end_body
