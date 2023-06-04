@@ -57,10 +57,10 @@
 \shortcut idx
 \color #008000
 \end_index
-\leftmargin 2.5cm
-\topmargin 2.5cm
-\rightmargin 2.5cm
-\bottommargin 2.5cm
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -81,12 +81,48 @@
 
 \begin_body
 
-\begin_layout Title
-Miniproject - DDPG
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{center} 
+\backslash
+huge
+\backslash
+textbf{Miniproject - DDPG}
+\backslash
+
+\backslash
+%
 \end_layout
 
-\begin_layout Author
-Antoine Maier - Aude Maier
+\begin_layout Plain Layout
+
+
+\backslash
+large
+\backslash
+sffamily Antoine Maier, Aude Maier
+\backslash
+
+\backslash
+%
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{center}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section*
@@ -111,16 +147,6 @@ literal "false"
  pendulum.
  Throughout the development, we will incrementally build the components
  of DDPG and analyze their importance for correct and effective learning.
- 
-\end_layout
-
-\begin_layout Standard
-This Jupyter notebook contains our implementation and report for this project.
- Do not forget to remove the report parts before submitting the notebook.
-\end_layout
-
-\begin_layout Standard
-The instructions are available in `Miniproject_DDPG.pdf` file.
 \end_layout
 
 \begin_layout Section*
@@ -128,54 +154,21 @@ The instructions are available in `Miniproject_DDPG.pdf` file.
 \end_layout
 
 \begin_layout Standard
-The environment consists of a pendulum attached to a fixed pivot point.
- Its position is described by the angle 
-\begin_inset Formula $\alpha$
+In this work, the action space is renormalized to 
+\begin_inset Formula $[-1,1]$
 \end_inset
 
- between the pendulum and the upward vertical direction, and its (angular)
- velocity is 
-\begin_inset Formula $\dot{\alpha}$
-\end_inset
-
-.
- The pendulum is actuated by applying a torque 
-\begin_inset Formula $\tau$
-\end_inset
-
- on its pivot point (the action space is thus continuous).
- The pendulum is subject to gravity, which is the only external force acting
- on it.
+ where -1 corresponds to the maximum torque in the clockwise direction (i.e.
+ -2) and 1 to the maximum torque in the counterclockwise direction (i.e.
+ 2).
+ This convention is used throughout the rest of this report.
 \end_layout
 
 \begin_layout Standard
-The pendulum starts in a random position, with a random velocity and the
- aim is to stabilize it in the inverted position, using little torque.
- More precisely, we want to maximise cummulative reward 
-\begin_inset Formula $-\left(\alpha^{2}+0.1\dot{\alpha}^{2}+0.001\tau^{2}\right)$
-\end_inset
-
- over a time horizon of 200 steps.
- The pendulum starts in a random position, with a random velocity.
-\end_layout
-
-\begin_layout Standard
-First we will compare two policies: a random policy and a heuristic policy.
- The random policy is a policy that selects actions uniformly at random
- from the action space, i.e.
- it applies a tork of random magnitude (within the allowed range)in a random
- direction.
- The heuristic policy is defined as follows:
-\end_layout
-
-\begin_layout Itemize
-When the pendulum is in the lower half of the domain, applies a fixed torque
- in the same direction as the pendulum's angular velocity;
-\end_layout
-
-\begin_layout Itemize
-When the pendulum is in the upper half of the domain, applies a fixed torque
- in the opposite direction as the pendulum's angular velocity.
+First we will compare two policies: a random policy that selects actions
+ uniformly at random from the action space, and a heuristic policy desined
+ to accelerate the pendulum when on the lower half of the domain and deccelerate
+ it otherwise.
 \end_layout
 
 \begin_layout Standard
@@ -185,134 +178,6 @@ The average return over 100 episodes and its standard deviation for the
 \end_inset
 
 , which sets a baseline for the performance of the policies.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-
-\lang french
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "45col%"
-special "none"
-height "1in"
-height_special "totalheight"
-thickness "0.4pt"
-separation "3pt"
-shadowsize "4pt"
-framecolor "black"
-backgroundcolor "none"
-status open
-
-\begin_layout Plain Layout
-\align center
-
-\lang french
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/3-Average-return.pdf
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\lang french
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:3"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset space \hfill{}
-\end_inset
-
-
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "45col%"
-special "none"
-height "1in"
-height_special "totalheight"
-thickness "0.4pt"
-separation "3pt"
-shadowsize "4pt"
-framecolor "black"
-backgroundcolor "none"
-status open
-
-\begin_layout Plain Layout
-\align center
-
-\lang french
-\begin_inset Graphics
-	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Training.pdf
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\lang french
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:4-training"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -359,6 +224,26 @@ noprefix "false"
  for all nonzero values of the fixed torque.
 \end_layout
 
+\begin_layout Standard
+The performance of these two policies can be compared to the next policies
+ of this homework in Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:appendix-comparison"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
 \begin_layout Section*
 4 Q-function of the heuristic policy
 \end_layout
@@ -399,77 +284,264 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-We then plot and compare the Q-values given by the Q-network before and
- after training, for several values of torque and velocity, by mean of heatmaps.
- The chosen values for the torque and velocity are 
-\begin_inset Formula $(0,$
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\lang french
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\align center
+
+\lang french
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/3-Average-return.pdf
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang french
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:3"
+
+\end_inset
+
+Average return of the heuristic agent and the random agent over 100 episodes.
+ The heuristic agent is trained with 11 different torque intensities between
+ 0 and 1.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \hfill{}
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\align center
+
+\lang french
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-Training.pdf
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\lang french
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4-training"
+
+\end_inset
+
+Mean Q-loss per episode during training of the Q-network for the heuristic
+ agent.
+ The slope of the linear regression line is 0.01.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-As can be seen on Fig.
-\begin_inset space ~
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/4-5-Heatmaps.png
+	scale 40
+
 \end_inset
 
-, the Q-values before training are a mix of randomness and continuity, which
- is easily explained by the random initialization of the weights and the
- intrinsic continuity of the network.
- The Q-values after training are (in absolute value) larger by 4 order of
- magnitudes.
- The heatmap corresponding to 0 torque and 0 velocity shows an accurate
- representation from the network of the reward distribution, i.e.
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:4-5-Heatmaps"
+
+\end_inset
+
+Q-value as a function of the position of the pendulum, for a given torque
+ and velocity.
+ The two first rows plot the Q-values computed by the heuristic Q-network
+ before and after training, respectively.
+ The third row shows the Q-values computed by the Q-network of the DDPG
+ agent.
+ For each row, five different torque-velocity pairs are considered.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We then plot and compare the Q-values given by the Q-network before and
+ after training, for several values of torque and velocity, by mean of heatmaps.
+ The result is shown on the two top rows on Fig. 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4-5-Heatmaps"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, where a positive velocity corresponds to the pendulum moving in the trigonomet
+ric direction and a positive torque corresponds to a torque applied in the
+ trigonometric direction.
+\end_layout
+
+\begin_layout Standard
+The Q-values before training are almost null constants compared to after
+ the training.
+ In fact, if plotted on a different color scale, we would see that the Q-values
+ before training are a mix of randomness and continuity or order 
+\begin_inset Formula $O(10^{-2})$
+\end_inset
+
+, which is easily explained by the random initialization of the weights
+ and the intrinsic continuity of the network, and it is certainly not due
+ to the fact that the policy acheives a high return and that the Q-network
+ is able to predict it.
+\end_layout
+
+\begin_layout Standard
+The Q-values after training are 4 order of magnitude larger (in absolute
+ value).
+ The heatmap corresponding to velocity=0 and torque=0 shows an accurate
+ representation of the reward distribution, i.e.
  the closer you are to 
-\begin_inset Formula $0^{°}$
+\begin_inset Formula $\alpha=0^{\circ}$
 \end_inset
 
 , the more reward you get and the easier it will be to be close to 
-\begin_inset Formula $0^{°}$
+\begin_inset Formula $\alpha=0^{\circ}$
 \end_inset
 
  in the future.
  A notable fact is that this representation appeared without any explicit
- training of the action corresponding to torque
-\begin_inset Formula $=0$
-\end_inset
-
- but is an interpolation of the knowledge acquired for torque
-\begin_inset Formula $=\pm1$
+ training of the action corresponding to torque=0 but is an interpolation
+ of the knowledge acquired for torque=
+\begin_inset Formula $\pm1$
 \end_inset
 
 .
 \end_layout
 
 \begin_layout Standard
-The heatmaps of torque
-\begin_inset Formula $=\pm1$
-\end_inset
-
-, velocity
-\begin_inset Formula $=-1$
-\end_inset
-
- are very similar and can be summarized as a slight rotation of the 
-\begin_inset Formula $(0,0)$
-\end_inset
-
- heatmap.
- Again, one can note that each torque has only been trained on half of the
- angle values, hence they look as if they have inspired each other for the
- other half of the values.
+The heatmaps of velocity=1, torque=-1 is similar to the previous one, but
+ with a slight rotation in the clockwise direction.
+ This is due to the fact that with this (small) velocity, the heuristic
+ policy will decelerate the pendulum to try to balance it in the inverted
+ position, thus leading to a high reward for a small negative angle.
+ We note that the lower left and right cadrans are situations that the Q-network
+ has never experienced, since the heuristic policy is perfectly deterministic.
+ With velocity=1 but torque=1, these are the two upper cadrans that are
+ unexperienced situations for the Q-network.
+ However, the heatmap is very similar to the previous one, hence it looks
+ the Q-network has infered the Q-values for the unexperienced situations
+ from the experienced ones.
+ Unfortunately, we can doubt that in such a situation of positive velocity
+ and accelerated pendulum the Q-value would be as high as calimed by the
+ Q-network.
 \end_layout
 
 \begin_layout Standard
-Finally, the heatmaps with torque
-\begin_inset Formula $=\pm1$
-\end_inset
-
-, velocity
-\begin_inset Formula $=-5$
-\end_inset
-
-
+Then, the heatmap with velocity=5 and torque=-1 resembles the one with velocity=
+1 and torque=-1, but with the high-reward circular sector rotated in the
+ clockwise direction.
+ This is due to the fact that with a greater velocity, the heuristic policy
+ will be able balance the pendulum if it decelerates it earlier.
+ This time, we chose to change sign of both the velocity and the torque.
+ We expect the heatmap to be the mirrored image of the previous one, wich
+ is the case up to a certain extent.
+ We can image that the differrences between the two heatmaps is due to the
+ fact that the Q-network has not been perfectly trained.
 \end_layout
 
 \begin_layout Section*
@@ -492,9 +564,11 @@ ns, a small Gaussian noise is added to the action returned by the policy
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
+\begin_inset Wrap figure
+lines 0
+placement o
+overhang 0col%
+width "50col%"
 status open
 
 \begin_layout Plain Layout
@@ -515,11 +589,17 @@ name "fig:5-training"
 
 \end_inset
 
-
+Training curves for the Q-network and the policy network of the minimal
+ DDPG agent.
+ The return is also plotted with a moving average smoothing.
 \end_layout
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Plain Layout
 
 \end_layout
 
@@ -529,7 +609,7 @@ name "fig:5-training"
 \end_layout
 
 \begin_layout Standard
-Fig.
+On Fig.
 \begin_inset space ~
 \end_inset
 
@@ -543,14 +623,81 @@ noprefix "false"
 
 \end_inset
 
- reports the losses of the Q network and Policy network as well as the cumulativ
-e reward for each episode throughout the training.
+ we see the Q-network and policy network training curves with batches of
+ size 128 over 1000 episodes, as well as return per episode.
+ We see that the training of the two networks are correlated, they both
+ first overfit then rapidly decerse their loss in ~100 episodes, then the
+ curve plateau for ~100 episodes, and finally they both learn slowly but
+ steadily until the loss reaches ~0 at episode 500.
+ We see that indeed the networks learned well because the return per episode
+ increases steadily until episode 500, then it plateaus.
+ This means that stopping the training at episode 500 would have been a
+ good choice.
 \end_layout
 
 \begin_layout Standard
-Once the training is done, we execute 100 test episodes uding the trained
- Policy network.
- The average return obtained is...
+The trained policy achieves an average return over 100 episodes and standard
+ deviation of 
+\begin_inset Formula $-180\pm100$
+\end_inset
+
+, which is significantly better than the heuristic policy.
+ The comparison can be seeon on Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:appendix-comparison"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+We also want to compare the Q-values given by the Q-network trained on the
+ heuristic policy and trained on the agent with a policy network.
+ The result is shown on the two bottom rows of Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:4-5-Heatmaps"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ First, we see that with the policy network the high-rewar sector is much
+ larger than with the heuristic policy.
+ This is due to the fact that the policy network is more versatile and thus
+ can react to more various situations.
+ In particular, for a null or small velocity, the value of the torque has
+ only a small influence on the location of the high-reward sector because
+ if the torque is not optimal with respect to the velocity, the policy network
+ will compensate this the next step, i.e almost immediately.
+ This is not the case with the heuristic policy, which is deterministic.
+\end_layout
+
+\begin_layout Standard
+With velocity=5, we would again expect the two heatmaps to be the mirror
+ version of each other.
+ Even though the high-reward sectors are indeed mirrored, with negative
+ torque is is larger and there exists a region with low-reward in the upper-left
+ region, which is nonexistent in the other heatmap.
+ This might be due to the fact that a velocity of magnitude 5 in the upper
+ cadrans was a rare situations during the training and thus the Q-network
+ has not been able to learn well the Q-values for these situations, which
+ is an example of missgeneralization[SOURCE].
 \end_layout
 
 \begin_layout Section*
@@ -632,6 +779,23 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:6-training"
+
+\end_inset
+
+Training curves for the Q-network and the policy network of the DDPG agent
+ equipped with target networks, for different values of update parameter
+ 
+\begin_inset Formula $\tau$
+\end_inset
+
+.
+ The return per episode is also plotted for each value of 
+\begin_inset Formula $\tau.$
+\end_inset
+
 
 \end_layout
 
@@ -684,6 +848,17 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:7-training"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -697,9 +872,86 @@ status open
 
 \end_layout
 
+\begin_layout Standard
+We implemented this modification and we see on Fig.
+\begin_inset space ~
 \end_inset
 
 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:6-training"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ the training curves of the Q-network and policy network, as well as the
+ return per episode, using batch size 128 over 1000 episodes, for 5 values
+ of 
+\begin_inset Formula $\tau$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We see that the stability of the training varies with the value of 
+\begin_inset Formula $\tau$
+\end_inset
+
+.
+ For 
+\begin_inset Formula $\tau=0.1$
+\end_inset
+
+ and 
+\begin_inset Formula $\tau=1$
+\end_inset
+
+ (which corresponds to the original DDPG algorithm), the training is unstable,
+ with the Q-network loss and policy network loss oscillating around 1000.
+ For 
+\begin_inset Formula $\tau=0.01$
+\end_inset
+
+, the curves are similar to 
+\begin_inset Formula $\tau=0.1$
+\end_inset
+
+ during the first 200 episodes but then the losses decrease to approach
+ zero.
+ Hence, despite the observed convergence, it is likely that another seed
+ could have make the training unstable.
+ For 
+\begin_inset Formula $\tau=0.8$
+\end_inset
+
+, the training curves show several abrupt peaks during the first 600 episodes.
+ The most stable training is obtained for 
+\begin_inset Formula $\tau=0.5$
+\end_inset
+
+, with the losses decreasing smoothly and the return increasing faster than
+ for the other values of 
+\begin_inset Formula $\tau$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\tau=0.5$
+\end_inset
+
+ therefore looks like a sweet spot between larger values that do not allow
+ a sufficient effect of the target networks and smaller values that update
+ the networks too slowly, making them unable to converge.
+\end_layout
+
+\begin_layout Standard
+...
+ add the average cumulative reward over 100 episodes...
 \end_layout
 
 \begin_layout Section*
@@ -725,6 +977,50 @@ Adding noise to the action helps exploration of the state space, which is
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename //wsl$/Ubuntu/home/aude/workspace_vscode/ANN/DDPG-Inverted-Pendulum/Figures/Appendix-Average-return.pdf
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:appendix-comparison"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
