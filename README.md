@@ -19,13 +19,8 @@ To run the code, simply open the DDPG_pendulum.ipynb notebook and run the cells.
 
 You can modify the hyperparameters and other settings to experiment with different configurations. The results are displayed in the notebook, and you can also save the trained models and plots for later analysis.
 
-## License
-This project is licensed under the MIT License - see the LICENSE.md file for details.
-
 ## Acknowledgments
-This project is based on the Deep Reinforcement Learning course by Phil Tabor on Udemy. Special thanks to Phil for his excellent teaching and resources.
-
-If you use this project for your own research or learning, please cite the course and this repository.
+This project is based on the Artificial Neural Networks / Reinforcement Learning course of EPFL taught by Gerstner Wulfram.
 
 ## Contact
-If you have any questions or feedback, please contact me at [your-email-here].
+This project was jointly developped by Antoine Maier and Aude Maier.
