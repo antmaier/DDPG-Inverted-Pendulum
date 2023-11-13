@@ -22,5 +22,5 @@ You can modify the hyperparameters and other settings to experiment with differe
 ## Acknowledgments
 This project is based on the Artificial Neural Networks / Reinforcement Learning course of EPFL taught by Gerstner Wulfram.
 
-## Contact
+## Collaborators
 This project was jointly developped by Antoine Maier and Aude Maier.
